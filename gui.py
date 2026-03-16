@@ -5,14 +5,17 @@ from tracker import add_session, get_sessions, get_total_minutes
 from analytics import show_subject_chart
 
 
+# Button hover effect (change color when mouse enters)
 def on_enter(e):
     e.widget["background"] = "#2980b9"
 
 
+# Restore button color when mouse leaves
 def on_leave(e):
     e.widget["background"] = "#3498db"
 
 
+# GUI window to add a new study session
 def add_session_gui():
     win = tk.Toplevel(window)
     win.title("Add Study Session")
@@ -26,6 +29,7 @@ def add_session_gui():
     minutes = tk.Entry(win)
     minutes.pack()
 
+    # Save study session
     def submit():
         if subject.get() == "" or minutes.get() == "":
             messagebox.showerror("Error", "Please fill all fields")
@@ -38,6 +42,7 @@ def add_session_gui():
     tk.Button(win, text="Back", command=win.destroy).pack(pady=5)
 
 
+# Display all study sessions in table format
 def view_sessions():
     win = tk.Toplevel(window)
     win.title("Study Sessions")
@@ -58,20 +63,24 @@ def view_sessions():
     tree.column("Minutes", width=80, anchor="center")
     tree.column("Date", width=200)
 
+    # Add vertical scrollbar
     scroll = ttk.Scrollbar(frame, orient="vertical", command=tree.yview)
     tree.configure(yscrollcommand=scroll.set)
 
     scroll.pack(side="right", fill="y")
     tree.pack(fill="both", expand=True)
 
+    # Load sessions from database
     sessions = get_sessions()
 
+    # Insert data into table
     for s in sessions:
         tree.insert("", tk.END, values=s)
 
     tk.Button(win, text="Back", command=win.destroy).pack(pady=10)
 
 
+# Show total study time
 def show_total():
     win = tk.Toplevel(window)
     win.title("Total Study Time")
@@ -84,6 +93,7 @@ def show_total():
     tk.Button(win, text="Back", command=win.destroy).pack()
 
 
+# Main GUI function
 def run_gui():
     global window
 
@@ -93,6 +103,7 @@ def run_gui():
 
     window.geometry("500x450")
 
+    # Center window on screen
     screen_width = window.winfo_screenwidth()
     screen_height = window.winfo_screenheight()
     x = (screen_width / 2) - (500 / 2)
@@ -101,6 +112,7 @@ def run_gui():
     window.geometry(f"500x450+{int(x)}+{int(y)}")
     window.resizable(False, False)
 
+    # Title label
     title = tk.Label(
         window,
         text="Smart Study Tracker",
@@ -113,6 +125,7 @@ def run_gui():
     button_frame = tk.Frame(window, bg="#f4f6f7")
     button_frame.pack()
 
+    # Button style dictionary
     btn_style = {
         "width": 25,
         "height": 1,
@@ -124,6 +137,7 @@ def run_gui():
         "pady": 5
     }
 
+    # List of buttons and their functions
     buttons = [
         ("Add Study Session", add_session_gui),
         ("View Sessions", view_sessions),
@@ -131,12 +145,14 @@ def run_gui():
         ("Total Study Time", show_total)
     ]
 
+    # Create buttons dynamically
     for text, cmd in buttons:
         b = tk.Button(button_frame, text=text, command=cmd, **btn_style)
         b.pack(pady=6)
         b.bind("<Enter>", on_enter)
         b.bind("<Leave>", on_leave)
 
+    # Exit button
     exit_btn = tk.Button(
         window,
         text="Exit",
@@ -150,4 +166,5 @@ def run_gui():
     )
     exit_btn.pack(pady=20)
 
+    # Run the application
     window.mainloop()
